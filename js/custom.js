@@ -6,7 +6,7 @@ class Joblink {
     this.addLinkBtn = $('.add-link-button');
     this.dropdownMenu = $('#dropdown');
 
-    $('.tab-pane').on('click', '.slider', this.tabPanelListeners);
+    $('.tab-pane').on('click', '.slider', this.tabPanelListeners.bind(this));
     this.bodyEl.on('click', '.settings-url', this.bodyListeners);
     this.dropdownMenu.change(this.dropdownListener.bind(this));
 
@@ -42,38 +42,23 @@ class Joblink {
     }
   }
 
+  toggleDarkMode(isDark) {
+    $('#dark-mode-slide').prop('checked', isDark);
+    $('.list-group-item').toggleClass('dark_mode', isDark);
+    this.bodyEl.toggleClass('dark_mode', isDark);
+    this.dropdownMenu.toggleClass('dark_mode', isDark);
+    $('.nav-link').toggleClass('dark_nav', isDark);
+    this.addLinkBtn.toggleClass('dark_button', isDark);
+  }
+
   checkDarkMode () {
-    this.storage.getDarkMode().then(item => {
-      if (item) {
-        $('#dark-mode-slide').prop('checked', true);
-        $('.list-group-item').addClass('dark_mode');
-        this.bodyEl.addClass('dark_mode');
-        this.dropdownMenu.addClass('dark_mode');
-        $('.nav-link').addClass('dark_nav');
-        this.addLinkBtn.addClass('dark_button');
-      };
-    });
+    this.storage.getDarkMode().then(this.toggleDarkMode.bind(this));
   }
 
   tabPanelListeners () {
-    this.storage.getDarkMode().then(item => {
-      if (item) {
-        this.storage.setDarkMode(false);
-        $('#dark-mode-slide').prop('unchecked', true);
-        $('.list-group-item').removeClass('dark_mode');
-        this.bodyEl.removeClass('dark_mode');
-        this.dropdownMenu.removeClass('dark_mode');
-        $('.nav-link').removeClass('dark_nav');
-        this.addLinkBtn.removeClass('dark_button');
-      } else {
-        this.storage.setDarkMode(true);
-        $('#dark-mode-slide').prop('checked', true);
-        $('.list-group-item').addClass('dark_mode');
-        this.bodyEl.addClass('dark_mode');
-        this.dropdownMenu.addClass('dark_mode');
-        $('.nav-link').addClass('dark_nav');
-        this.addLinkBtn.addClass('dark_button');
-      }
+    this.storage.getDarkMode().then(isDark => {
+      this.storage.setDarkMode(!isDark);
+      this.toggleDarkMode(!isDark);
     });
   }
 
